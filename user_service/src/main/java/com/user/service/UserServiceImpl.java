@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.user.entity.User;
 
 @Service
@@ -25,11 +26,16 @@ public class UserServiceImpl implements UserService {
 	
 	
 	@Override
+	@HystrixCommand(fallbackMethod="getUserFallBack")
 	public User getUser(Long userId) {
 		User user = users.stream().filter(u->u.getUserId().equals(userId)).findAny().orElse(null);
 		List contacts = restTemplate.getForObject(CONTACT_SERVICE_URL+userId, List.class);
 		user.setContacts(contacts);
 		return user;
+	}
+	
+	public User getUserFallBack(Long userId) {
+		return new User();
 	}
 
 }
