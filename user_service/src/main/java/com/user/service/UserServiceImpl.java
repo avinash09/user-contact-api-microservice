@@ -37,5 +37,4 @@ public class UserServiceImpl implements UserService {
 	public User getUserFallBack(Long userId) {
 		return new User();
 	}
-
 }

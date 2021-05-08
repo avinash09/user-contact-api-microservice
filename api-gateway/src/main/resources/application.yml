@@ -40,7 +40,7 @@ management:
  endpoints:
   web:
    exposure:
-    include: hystrix.stream
+    include: "*"
 
 hystrix:
  command:
@@ -48,4 +48,4 @@ hystrix:
    execution:
     isolation:
      thread:
-      timeoutInMilliseconds: 5000
+      timeoutInMilliseconds: 5000      
