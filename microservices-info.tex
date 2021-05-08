@@ -1,0 +1,23 @@
+user-service
+			port 9001
+			/user/1344
+			
+ contact-service
+            port 9002
+			/contact/user/1314
+			
+ api-gateway 
+          port 9000
+		  
+ eureka server
+          port 8152
+
+ hytrix dashboard
+          port 9195
+		  
+ //hystrix dashboard 		  
+ http://localhost:9195/hystrix
+ 
+ 
+ //API Gate way hystrix stream
+ http://localhost:9000/actuator/hystrix.stream
