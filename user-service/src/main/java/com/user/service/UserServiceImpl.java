@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,10 +13,14 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.user.entity.User;
 
 @Service
+@RefreshScope
 public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Value("${microservices.contact.endpoint.uri}")
+	private String CONTACT_SERVICE_URL;
 
 	private List<User> users = new ArrayList<>();
 	

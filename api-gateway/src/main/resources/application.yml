@@ -1,15 +1,6 @@
 server:
  port: 9000
- 
-eureka:
- client:
-  register-with-eureka: true
-  fetch-registry: true
-  serviceUrl:
-   defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
- instance:
-  hostname: localhost
- 
+
 spring:
  application:
   name: API-GATEWAY
