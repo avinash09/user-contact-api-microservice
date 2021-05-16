@@ -3,4 +3,7 @@ server:
 spring:
  application:
   name: CONTACT-SERVICE
-  
+
+logging:
+ file:
+  name: F:/Avinash/microservice_log/microservice.log

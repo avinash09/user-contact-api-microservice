@@ -3,3 +3,7 @@ server:
 spring:
  application:
   name: USER-SERVICE
+
+logging:
+ file:
+  name: F:/Avinash/microservice_log/microservice.log

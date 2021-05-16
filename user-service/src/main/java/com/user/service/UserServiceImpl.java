@@ -3,19 +3,25 @@ package com.user.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.user.entity.User;
 
 @Service
 @RefreshScope
 public class UserServiceImpl implements UserService {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
 	@Autowired
 	private RestTemplate restTemplate;
 	
@@ -34,9 +40,22 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@HystrixCommand(fallbackMethod="getUserFallBack")
 	public User getUser(Long userId) {
-		User user = users.stream().filter(u->u.getUserId().equals(userId)).findAny().orElse(null);
+		User user = null;
+		try {
+		log.info("getUser::userId:"+userId);
+		log.info("getUser::CONTACT_SERVICE_URL:"+CONTACT_SERVICE_URL);
+
+		user = users.stream().filter(u->u.getUserId().equals(userId)).findAny().orElse(null);
+
 		List contacts = restTemplate.getForObject(CONTACT_SERVICE_URL+userId, List.class);
+
+		log.info("getUser::Contact Service Response:"+new ObjectMapper().writeValueAsString(contacts));
+
 		user.setContacts(contacts);
+
+		}catch(JsonProcessingException ex) {
+			log.error("getUser::json exception:"+ex.getMessage());
+		}
 		return user;
 	}
 	
