@@ -30,3 +30,128 @@ user-service
  CONFIG-SERVER
  
  https://github.com/avinash09/cloud-config-server
+
+ //zipkin download path
+ https://zipkin.io/pages/quickstart
+
+ //ELK download path elestic search, logstash and kibana
+ https://www.elastic.co/downloads/logstash
+
+ //run elestic search
+F:\Avinash\Microservice\ELK\elasticsearch-7.6.2\bin>elasticsearch.bat
+
+
+ //Modify the kibana.yml to point to the elasticsearch instance. In our case this will be 9200. So uncomment the following line in kibana.yml-
+ //elasticsearch.url: "http://localhost:9200"
+
+ //run kibana
+ F:\Avinash\Microservice\ELK\kibana-7.6.2-windows-x86_64\bin>kibana.bat
+
+
+ //create index in kibana  -------------- it is optional
+
+ http://localhost:5601/app/dev_tools#/console
+
+ Input:-
+ PUT microservice_index
+{
+"settings" : {
+"index" : {
+"number_of_shards" : 3,
+"number_of_replicas" : 2
+}
+}
+}
+
+Response:-
+
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "microservice_index"
+}
+
+
+//add document to index any
+
+Input:-
+POST /microservice_index/default/
+{
+  "name":"event processing",
+  "instructor":{
+    "firstName":"microservice",
+    "lastName":"index"
+  }
+
+}
+
+Response:-
+
+#! [types removal] Specifying types in document index requests is deprecated, use the typeless endpoints instead (/{index}/_doc/{id}, /{index}/_doc, or /{index}/_create/{id}).
+{
+  "_index" : "microservice_index",
+  "_type" : "default",
+  "_id" : "q9rZaXkBUd1gjKPeg0Q3",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 3,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 0,
+  "_primary_term" : 1
+}
+
+
+
+//logstash configuration
+//F:\Avinash\Microservice\ELK\logstash-7.6.2\bin
+//create logstash.conf file and add below properties
+
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+input {
+  file {
+    type => "java"
+    path => "F:/Avinash/microservice_log/microservice.log"  ---------*.log can be use
+    codec => multiline {
+      pattern => "^%{YEAR}-%{MONTHNUM}-%{MONTHDAY} %{TIME}.*"
+      negate => "true"
+      what => "previous"
+    }
+  }
+}
+
+filter {
+  #If log line contains tab character followed by 'at' then we will tag that entry as stacktrace
+  if [message] =~ "\tat" {
+    grok {
+      match => ["message", "^(\tat)"]
+      add_tag => ["stacktrace"]
+    }
+  }
+
+}
+
+output {
+
+  stdout {
+    codec => rubydebug
+  }
+
+  # Sending properly parsed log events to elasticsearch
+  elasticsearch {
+    hosts => ["localhost:9200"]
+  }
+}
+
+
+//run logstash
+F:\Avinash\Microservice\ELK\logstash-7.6.2\bin>logstash.bat -f logstash.conf
+
+//create index in kibana hit the url:- http://localhost:5601
+Kibana >> Management >> create index >> type logstash-* and click next >> select with timestamp and finish
+
+//view log
+Discover >> select index and log will be visible.
