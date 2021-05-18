@@ -11,8 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableHystrix
-@EnableCircuitBreaker
 public class UserServiceApplication {
 
 	public static void main(String[] args) {
