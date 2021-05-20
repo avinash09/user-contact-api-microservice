@@ -1,0 +1,21 @@
+server:
+ port: 8761
+ 
+eureka:
+ client:
+  registryFetchIntervalSeconds: 5
+  registerWithEureka: false
+  fetchRegistry: false
+ server:
+  waitTimeInMsWhenSyncEmpty: 0
+ instance:
+    leaseRenewalIntervalInSeconds: 10
+
+spring:
+  boot:
+    admin:
+      context-path: /admin
+      
+management:
+ security: 
+  enabled: false
